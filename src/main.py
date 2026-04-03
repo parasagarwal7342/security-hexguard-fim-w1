@@ -3,7 +3,10 @@ import os
 import sys
 from integrity_checker import IntegrityChecker
 
+__version__ = "1.0.0"
+
 def main():
+    print(f"HexGuard Security — v{__version__}")
     parser = argparse.ArgumentParser(description="🛡️ HexGuard — File Integrity Monitor (FIM)")
     parser.add_argument("--init", help="Initialize or update baseline for a directory", metavar="DIR")
     parser.add_argument("--check", help="Scan directory against saved baseline", metavar="DIR")

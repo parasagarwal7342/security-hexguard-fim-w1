@@ -26,10 +26,10 @@ HexGuard is a lightweight, CLI-based file integrity monitoring tool designed to 
 - [x] Commit: "feat: add CLI interface and error handling"
 
 #### Thursday — Testing + Polish
-- [ ] Write unit tests for hashing and scanner logic
-- [ ] Add logging support for security events
-- [ ] Refactor for clean, modular code
-- [ ] Commit: "test: add unit tests | refactor: clean up code"
+- [x] Write unit tests for hashing and scanner logic
+- [x] Add logging support for security events
+- [x] Refactor for clean, modular code
+- [x] Commit: "test: add unit tests | refactor: clean up code"
 
 #### Friday — Documentation + Deploy
 - [ ] Finalize README with installation and usage guide
