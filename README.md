@@ -20,10 +20,10 @@ HexGuard is a lightweight, CLI-based file integrity monitoring tool designed to 
 - [x] Commit: "feat: implement core scanning and hashing logic"
 
 #### Wednesday — Features + Edge Cases
-- [ ] Add CLI arguments using `argparse` (init, check, status)
-- [ ] Implement ignore-list functionality (.fim-ignore)
-- [ ] Handle permission errors and missing files
-- [ ] Commit: "feat: add CLI interface and error handling"
+- [x] Add CLI arguments using `argparse` (init, check, status)
+- [x] Implement ignore-list functionality (.fim-ignore)
+- [x] Handle permission errors and missing files
+- [x] Commit: "feat: add CLI interface and error handling"
 
 #### Thursday — Testing + Polish
 - [ ] Write unit tests for hashing and scanner logic
