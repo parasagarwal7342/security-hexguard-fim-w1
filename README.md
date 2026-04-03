@@ -23,6 +23,11 @@ This project follows a strict 6-day development lifecycle (Monday-Saturday).
 #### Friday — Documentation + Deploy
 - [x] Finalized documentation, tagged release `v1.0.0`, and deployed.
 
+#### Saturday — Post-Deploy Improvements
+- [x] Added GitHub Actions CI for linting and testing.
+- [x] Integrated `rich` CLI library for beautiful table-based reporting.
+- [x] Published `CONTRIBUTING.md` and standard security policy.
+
 ---
 
 ### ⚙️ Installation
