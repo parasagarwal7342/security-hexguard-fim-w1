@@ -4,10 +4,49 @@ import json
 import logging
 
 class IntegrityChecker:
-    def __init__(self, root_dir):
-        self.root_dir = root_dir
+    def __init__(self, root_dir, ignore_file=".fim-ignore"):
+        self.root_dir = os.path.abspath(root_dir)
         self.baseline = {}
+        self.ignore_list = self._load_ignore_list(ignore_file)
+        self._setup_logging()
+
+    def _setup_logging(self):
+        """Sets up dual logging to console and file."""
         self.logger = logging.getLogger("HexGuard")
+        self.logger.setLevel(logging.INFO)
+        
+        # Avoid duplicate handlers
+        if not self.logger.handlers:
+            fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            
+            # File handler
+            fh = logging.FileHandler("hexguard.log")
+            fh.setFormatter(fmt)
+            self.logger.addHandler(fh)
+            
+            # Console handler
+            ch = logging.StreamHandler()
+            ch.setFormatter(fmt)
+            self.logger.addHandler(ch)
+
+    def _load_ignore_list(self, ignore_file):
+        """Loads a list of ignored files/directories from a file."""
+        ignore_path = os.path.join(self.root_dir, ignore_file)
+        ignores = {".git", "baseline.json", "hexguard.log", ".fim-ignore"}
+        if os.path.exists(ignore_path):
+            with open(ignore_path, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        ignores.add(line)
+        return list(ignores)
+
+    def _is_ignored(self, rel_path):
+        """Checks if a relative path should be ignored."""
+        for pattern in self.ignore_list:
+            if rel_path == pattern or rel_path.startswith(pattern + os.sep) or rel_path.startswith(pattern + "/"):
+                return True
+        return False
 
     def calculate_sha256(self, file_path):
         """Calculates the SHA-256 hash of a file."""
@@ -27,8 +66,9 @@ class IntegrityChecker:
         for root, _, files in os.walk(self.root_dir):
             for file in files:
                 file_path = os.path.join(root, file)
-                # Skip the baseline file itself if it's in the same dir
-                if file == "baseline.json" or file == ".git":
+                rel_path = os.path.relpath(file_path, self.root_dir)
+                
+                if self._is_ignored(rel_path):
                     continue
                 file_hash = self.calculate_sha256(file_path)
                 if file_hash:

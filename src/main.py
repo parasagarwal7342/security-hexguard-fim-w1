@@ -8,6 +8,7 @@ def main():
     parser.add_argument("--init", help="Initialize or update baseline for a directory", metavar="DIR")
     parser.add_argument("--check", help="Scan directory against saved baseline", metavar="DIR")
     parser.add_argument("--baseline", help="Custom baseline file path", default="baseline.json")
+    parser.add_argument("--ignore", help="Custom ignore file path", default=".fim-ignore")
     
     args = parser.parse_args()
     
@@ -15,13 +16,13 @@ def main():
         if not os.path.isdir(args.init):
             print(f"[-] Error: {args.init} is not a directory.")
             sys.exit(1)
-        checker = IntegrityChecker(args.init)
+        checker = IntegrityChecker(args.init, ignore_file=args.ignore)
         checker.generate_baseline(args.baseline)
     elif args.check:
         if not os.path.isdir(args.check):
             print(f"[-] Error: {args.check} is not a directory.")
             sys.exit(1)
-        checker = IntegrityChecker(args.check)
+        checker = IntegrityChecker(args.check, ignore_file=args.ignore)
         results = checker.verify_integrity(args.baseline)
         
         if results is None:
