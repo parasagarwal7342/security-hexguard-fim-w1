@@ -1,64 +1,80 @@
 # 🛡️ HexGuard — File Integrity Monitor (FIM)
-## Week 1: Security Project
+## Week 1: Security Project Release v1.0.0
 
 HexGuard is a lightweight, CLI-based file integrity monitoring tool designed to detect unauthorized changes to specific directories. It generates a cryptographic baseline (SHA-256) of folders and alerts the user to any file modifications, deletions, or new file creations.
 
 ---
 
-### 📋 Project Plan
+### 📋 Project Status: ✅ DEPLOYED
+This project follows a strict 6-day development lifecycle (Monday-Saturday).
 
 #### Monday — Project Init
-- [x] Choose the week's project (Security: File Integrity Monitor)
-- [x] Create project structure
-- [x] Initialize README.md, .gitignore, and LICENSE
-- [x] Commit: "chore: project init and planning docs"
+- [x] Initialized project structure and planning documentation.
 
 #### Tuesday — Core Logic
-- [x] Implement hashing function (SHA-256)
-- [x] Develop recursive directory scanner
-- [x] Implement baseline storage (JSON-based)
-- [x] Commit: "feat: implement core scanning and hashing logic"
+- [x] Implemented SHA-256 hashing and recursive directory scanning.
 
 #### Wednesday — Features + Edge Cases
-- [x] Add CLI arguments using `argparse` (init, check, status)
-- [x] Implement ignore-list functionality (.fim-ignore)
-- [x] Handle permission errors and missing files
-- [x] Commit: "feat: add CLI interface and error handling"
+- [x] Added `.fim-ignore` support and dual-stream forensic logging.
 
 #### Thursday — Testing + Polish
-- [x] Write unit tests for hashing and scanner logic
-- [x] Add logging support for security events
-- [x] Refactor for clean, modular code
-- [x] Commit: "test: add unit tests | refactor: clean up code"
+- [x] Verified logic with 100% passing Pytest suite (4 core items).
 
 #### Friday — Documentation + Deploy
-- [ ] Finalize README with installation and usage guide
-- [ ] Add `requirements.txt`
-- [ ] Create a sample test environment
-- [ ] Tag release v1.0.0
-- [ ] Commit: "docs: finalize README | release: v1.0.0"
-
-#### Saturday — Post-Deploy Improvements
-- [ ] Add GitHub Actions CI for linting and testing
-- [ ] Implement a simple HTML/Rich-CLI reporting feature
-- [ ] Add `CONTRIBUTING.md`
-- [ ] Commit: "ci: add GitHub Actions workflow"
+- [x] Finalized documentation, tagged release `v1.0.0`, and deployed.
 
 ---
 
-### ⚙️ Tech Stack
-- **Language:** Python 3.10+
-- **Security:** `hashlib`, `cryptography` (for secure baseline storage)
-- **CLI:** `argparse` / `click`
-- **Testing:** `pytest`
-- **Logging:** `logging` module
-
----
-
-### 🚀 Usage (Internal Use Only)
-> **Disclaimer:** This tool is for educational use and personal file monitoring. Use responsibly and do not run on sensitive system directories without proper backup.
-
+### ⚙️ Installation
+1. Clone the repository:
 ```bash
-python src/main.py --init /path/to/watch
-python src/main.py --check
+git clone https://github.com/parasagarwal7342/security-hexguard-fim-w1.git
+cd security-hexguard-fim-w1
 ```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 🚀 Usage Guide
+
+#### Step 1: Create a Baseline
+Generate a cryptographic snapshot of your target directory:
+```bash
+python src/main.py --init sample_input
+```
+
+#### Step 2: Verify Integrity
+Check the current state against your baseline:
+```bash
+python src/main.py --check sample_input
+```
+
+#### Step 3: Use Ignore Lists
+Create a `.fim-ignore` file in the root to skip specific paths:
+```bash
+echo "secret.txt" > .fim-ignore
+python src/main.py --check sample_input
+```
+
+---
+
+### 🔍 Forensic Logs
+All scan events are recorded in `hexguard.log` for audit purposes:
+```text
+2026-04-03 22:15:21 - INFO - Scanning directory: sample_input
+2026-04-03 22:15:21 - INFO - No violations detected.
+```
+
+---
+
+### 🧪 Educational Use Only
+> **⚠️ Disclaimer:** This tool is designed for educational purposes and personal file monitoring. While its hashing logic is robust, it is not a substitution for advanced EDR or corporate-grade File Integrity Monitoring systems. Use responsibly.
+
+---
+
+### 📄 License
+MIT License - Paras Agarwal (2026)
