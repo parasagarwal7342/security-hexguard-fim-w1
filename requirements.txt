@@ -1,0 +1,6 @@
+# Security & Utility
+cryptography==42.0.5
+pytest==8.1.1
+python-dotenv==1.0.1
+rich==13.7.1
+colorama==0.4.6
