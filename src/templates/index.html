@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ HexGuard Advanced — Dynamic Forensic Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: #1a1f26;
+            --accent-cyan: #00f3ff;
+            --accent-green: #39ff14;
+            --accent-red: #ff3131;
+            --accent-yellow: #fefe33;
+            --text-main: #e0e6ed;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard {
+            width: 900px;
+            max-width: 95%;
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+            border-radius: 12px;
+            padding: 2.5rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { color: var(--accent-cyan); letter-spacing: 2px; text-align: center; font-size: 2.2rem; margin-top: 0; }
+        
+        .target-selector {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: #0b0e14;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            color: var(--accent-cyan);
+            padding: 0.8rem;
+            border-radius: 4px;
+            outline: none;
+            font-family: monospace;
+        }
+
+        .controls { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0.8rem 1.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover { background: var(--accent-cyan); color: var(--bg-color); box-shadow: 0 0 10px var(--accent-cyan); }
+        .heal-btn { border-color: var(--accent-green); color: var(--accent-green); padding: 0.3rem 0.8rem; font-size: 0.7rem; }
+        .heal-btn:hover { background: var(--accent-green); color: var(--bg-color); }
+
+        .ransomware-alert { background: rgba(255, 49, 49, 0.1); border-left: 4px solid var(--accent-red); color: var(--accent-red); padding: 1rem; margin-top: 1rem; border-radius: 4px; display: none; animation: pulse 1s infinite alternate; text-align: center; }
+
+        @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 2rem; display: none; }
+        th, td { text-align: left; padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: var(--accent-cyan); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+        .mod { color: var(--accent-yellow); font-weight: bold; }
+        .del { color: var(--accent-red); font-weight: bold; }
+        .new { color: var(--accent-green); font-weight: bold; }
+        
+        footer { margin-top: 3rem; font-size: 0.8rem; color: var(--text-dim); text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>P Λ R Λ D I T I // HEXGUARD DYNAMIC 🛡️</h1>
+        
+        <div class="target-selector">
+            <span style="color: var(--text-dim); font-size: 0.9rem;">TARGET DIRECTORY:</span>
+            <input type="text" id="target-path" value="sample_input" placeholder="e.g. C:\Users\Desktop\Project">
+        </div>
+
+        <div id="ransomware-panel" class="ransomware-alert">
+            🚨 <strong>FORENSIC CRITICAL:</strong> High-Entropy Ransomware Signature Detected!
+        </div>
+        
+        <div class="controls">
+            <button onclick="runScan()">⚡ START DYNAMIC SCAN</button>
+            <button onclick="refreshBaseline()" style="border-color:var(--text-dim);color:var(--text-dim)">🔄 SECURE VAULT</button>
+        </div>
+
+        <div id="loading" style="display:none; text-align:center; color:var(--accent-cyan); padding: 1rem;">⏳ Traversing filesystem and computing Shannon Entropy...</div>
+        
+        <div id="no-violations" style="display:none; text-align:center; padding: 2rem; color: var(--accent-green); background: rgba(57, 255, 20, 0.05); border-radius: 8px;">
+            ✅ <strong>INTEGRITY VERIFIED:</strong> No cryptographic mutations detected in target scope.
+        </div>
+
+        <table class="results-table" id="results-table">
+            <thead><tr><th>STATUS</th><th>FILE IDENTITY</th><th>ACTION</th></tr></thead>
+            <tbody id="results-body"></tbody>
+        </table>
+    </div>
+
+    <footer>P Λ R Λ D I T I Cyber Intelligence —— Forensics Pipeline v1.5</footer>
+
+    <script>
+        async function runScan() {
+            const target = document.getElementById('target-path').value;
+            toggleLoading(true);
+
+            const resp = await fetch('/scan', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ target })
+            });
+            const data = await resp.json();
+            
+            toggleLoading(false);
+            if (data.error) { alert("❌ Error: " + data.error); return; }
+
+            const body = document.getElementById('results-body');
+            body.innerHTML = '';
+            let hasResults = false;
+            
+            if (data.ransomware && data.ransomware.length) {
+                document.getElementById('ransomware-panel').style.display = 'block';
+            }
+
+            if (data.modified) {
+                data.modified.forEach(f => { 
+                    const isRansom = data.ransomware && data.ransomware.includes(f) ? " [RANSOMWARE?]" : "";
+                    body.innerHTML += `<tr><td class="mod">⚠️ MODIFIED${isRansom}</td><td>${f}</td><td><button class="heal-btn" onclick="heal('${f}')">RESTORE</button></td></tr>`; hasResults = true; 
+                });
+            }
+            if (data.deleted) {
+                data.deleted.forEach(f => { body.innerHTML += `<tr><td class="del">❌ DELETED</td><td>${f}</td><td><button class="heal-btn" onclick="heal('${f}')">RESTORE</button></td></tr>`; hasResults = true; });
+            }
+            if (data.new) {
+                data.new.forEach(f => { body.innerHTML += `<tr><td class="new">🆕 NEW</td><td>${f}</td><td>--</td></tr>`; hasResults = true; });
+            }
+
+            if (data.status === "initialized") {
+                alert("🛡️ Secure Baseline Created for " + target);
+            }
+
+            if (hasResults) {
+                document.getElementById('results-table').style.display = 'table';
+            } else {
+                document.getElementById('no-violations').style.display = 'block';
+            }
+        }
+
+        async function heal(filename) {
+            const target = document.getElementById('target-path').value;
+            const resp = await fetch('/heal', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename, target })
+            });
+            const data = await resp.json();
+            if (data.success) {
+                alert("🛡️ Restored: " + filename);
+                runScan();
+            } else { alert("❌ Vault failure."); }
+        }
+
+        async function refreshBaseline() {
+            const target = document.getElementById('target-path').value;
+            if (confirm("Refresh Secure Vault for: " + target + "?")) {
+                const resp = await fetch('/init', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target })
+                });
+                const data = await resp.json();
+                if (data.error) alert("❌ Error: " + data.error);
+                else { alert(data.message); runScan(); }
+            }
+        }
+
+        function toggleLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            if (show) {
+                document.getElementById('results-table').style.display = 'none';
+                document.getElementById('no-violations').style.display = 'none';
+                document.getElementById('ransomware-panel').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
